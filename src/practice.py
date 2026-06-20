@@ -95,34 +95,48 @@ def print_task_report():
     analyzed_tasks, sorted_tasks, summary = analyze_task_risk(tasks, base_date)
     risk_tasks = [task for task in analyzed_tasks if task["is_risky"]]
 
-    print("=== 작업 리스크 및 우선순위 분석 리포트 ===")
+    print("# 작업 리스크 및 우선순위 분석 리포트")
     print()
-    print(f"[위험 작업] {len(risk_tasks)}건")
+    print("| 기준일 | 전체 작업 수 | 위험 작업 수 | 정상 작업 수 | 총 작업 시간 |")
+    print("| --- | ---: | ---: | ---: | ---: |")
+    print(
+        f"| 2026-01-26 | {summary['total_count']}건 | "
+        f"{summary['risk_count']}건 | {summary['normal_count']}건 | "
+        f"{summary['total_workload_hours']}시간 |"
+    )
+    print()
+    print("## 위험 작업")
+    print()
     if risk_tasks:
+        print("| 작업 | 남은 일수 | 소요 일수 | 판정 |")
+        print("| --- | ---: | ---: | --- |")
         for task in risk_tasks:
-            print(f"작업: {task['name']} ({task['task_id']})")
             print(
-                "남은 일수: "
-                f"{format_days(task['remaining_days'])} / "
-                f"소요 일수: {format_days(task['required_days'])}"
+                f"| {task['name']} ({task['task_id']}) | "
+                f"{format_days(task['remaining_days'])} | "
+                f"{format_days(task['required_days'])} | 위험 |"
             )
     else:
         print("위험 작업 없음")
 
     print()
-    print("[작업 우선순위]")
+    print("## 작업 우선순위")
+    print()
+    print("| 순위 | 작업 | 우선순위 | 마감일 |")
+    print("| ---: | --- | --- | --- |")
     for index, task in enumerate(sorted_tasks, start=1):
         print(
-            f"{index}. {task['name']} ({task['task_id']}) - "
-            f"{task['priority']}, 마감 {task['due_date']}"
+            f"| {index} | {task['name']} ({task['task_id']}) | "
+            f"{task['priority']} | {task['due_date']} |"
         )
 
     print()
-    print("[요약]")
-    print(f"전체 작업 수: {summary['total_count']}건")
-    print(f"위험 작업 수: {summary['risk_count']}건")
-    print(f"정상 작업 수: {summary['normal_count']}건")
-    print(f"총 작업 시간: {summary['total_workload_hours']}시간")
+    print("## 요약")
+    print()
+    print(f"- 전체 작업 수: {summary['total_count']}건")
+    print(f"- 위험 작업 수: {summary['risk_count']}건")
+    print(f"- 정상 작업 수: {summary['normal_count']}건")
+    print(f"- 총 작업 시간: {summary['total_workload_hours']}시간")
 
 
 def calculate_dashboard_kpis(data):
@@ -254,26 +268,42 @@ def create_recommendations(kpis):
 
     if kpis["error_rate"] > 5:
         recommendations.append(
-            "오류율 개선: 오류가 집중된 시간대의 처리 로직과 데이터 수집 경로를 점검한다. "
-            "예상 효과: 오류율 5% 이하 회복. 우선순위: 높음"
+            {
+                "title": "오류율 개선",
+                "action": "오류가 집중된 시간대의 처리 로직과 데이터 수집 경로를 점검한다.",
+                "effect": "오류율 5% 이하 회복",
+                "priority": "높음",
+            }
         )
 
     if kpis["item_suitability"] < 100:
         recommendations.append(
-            "항목 적정성 개선: 기준 미달 항목을 즉시 보충하고 최소 보유량 알림을 설정한다. "
-            "예상 효과: 항목 적정성 100% 달성. 우선순위: 높음"
+            {
+                "title": "항목 적정성 개선",
+                "action": "기준 미달 항목을 즉시 보충하고 최소 보유량 알림을 설정한다.",
+                "effect": "항목 적정성 100% 달성",
+                "priority": "높음",
+            }
         )
 
     if kpis["deadline_possibility"] < 95:
         recommendations.append(
-            "마감 가능성 개선: urgent/high 작업을 먼저 배정하고 지연 위험 작업의 담당 시간을 확보한다. "
-            "예상 효과: 마감 가능성 95% 이상 회복. 우선순위: 높음"
+            {
+                "title": "마감 가능성 개선",
+                "action": "urgent/high 작업을 먼저 배정하고 지연 위험 작업의 담당 시간을 확보한다.",
+                "effect": "마감 가능성 95% 이상 회복",
+                "priority": "높음",
+            }
         )
 
     if kpis["normal_status_rate"] < 90:
         recommendations.append(
-            "정상 상태율 개선: warning 상태의 측정값을 즉시 점검하고 임계치 초과 원인을 분석한다. "
-            "예상 효과: 정상 상태율 90% 이상 회복. 우선순위: 중간"
+            {
+                "title": "정상 상태율 개선",
+                "action": "warning 상태의 측정값을 즉시 점검하고 임계치 초과 원인을 분석한다.",
+                "effect": "정상 상태율 90% 이상 회복",
+                "priority": "중간",
+            }
         )
 
     return recommendations
@@ -347,12 +377,14 @@ def print_dashboard_report():
     recommendations = create_recommendations(kpis)
 
     print()
-    print("=" * 60)
+    print("---")
     print()
-    print("| 통합 운영 대시보드 시스템 |")
-    print(f"| {dashboard_data['date']} |")
+    print("# 통합 운영 대시보드 시스템")
     print()
-    print("[핵심 운영 지표 (KPI)]")
+    print(f"- 기준일: {dashboard_data['date']}")
+    print()
+    print("## 핵심 운영 지표 (KPI)")
+    print()
     print("| 지표 | 현재값 | 목표값 | 상태 |")
     print("| --- | ---: | ---: | --- |")
     print(
@@ -377,16 +409,21 @@ def print_dashboard_report():
     )
 
     print()
-    print("[긴급 대응 필요 이슈] TOP 5")
+    print("## 긴급 대응 필요 이슈 TOP 5")
+    print()
     for index, issue in enumerate(issues, start=1):
-        print(f"{index}. [{issue['level']}] {issue['title']}")
-        print(f"- {issue['detail']}")
-        print(f"- 조치: {issue['action']}")
+        print(f"{index}. **[{issue['level']}] {issue['title']}**")
+        print(f"   - 내용: {issue['detail']}")
+        print(f"   - 조치: {issue['action']}")
 
     print()
-    print("[AI 기반 개선 권고사항]")
+    print("## AI 기반 개선 권고사항")
+    print()
     for index, recommendation in enumerate(recommendations, start=1):
-        print(f"{index}. {recommendation}")
+        print(f"{index}. **{recommendation['title']}**")
+        print(f"   - 개선 액션: {recommendation['action']}")
+        print(f"   - 예상 효과: {recommendation['effect']}")
+        print(f"   - 우선순위: {recommendation['priority']}")
 
 
 def main():
