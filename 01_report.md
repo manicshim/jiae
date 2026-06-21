@@ -8,6 +8,13 @@
 
 모든 이미지는 세로형 모바일 캡처이며 해상도는 `542x1390`이다. 화면 하단에는 공통적으로 `임시저장`, `제출하기` 버튼이 보인다.
 
+이미지는 다음 두 과제로 구분된다.
+
+| 과제 | 이미지 | 구현 파일 |
+| --- | --- | --- |
+| 과제 A | `img/s1.jpg`, `img/s2.jpg` | `src/01_task_risk_analyzer.py` |
+| 과제 B | `img/s3.jpg`, `img/s4.jpg`, `img/s5.jpg` | `src/02_operational_kpi_analyzer.py` |
+
 ## 파일별 상세 내용
 
 ### `img/s1.jpg`
