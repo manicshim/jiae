@@ -41,6 +41,9 @@
 .
 ├── README.md
 ├── 01_report.md
+├── text
+│   ├── 01_assignment_A.md
+│   └── 02_assignment_B.md
 ├── 02_progress.md
 ├── 03_compelete.md
 ├── 04_description.md
@@ -62,6 +65,8 @@
 | --- | --- |
 | `README.md` | 전체 구성 요약 |
 | `01_report.md` | 이미지별 상세 분석 보고서 |
+| `text/01_assignment_A.md` | 과제 A 이미지 내용을 문자열로 정리한 문서 |
+| `text/02_assignment_B.md` | 과제 B 이미지 내용을 문자열로 정리한 문서 |
 | `02_progress.md` | 과제별 해야 할 일 정리 |
 | `03_compelete.md` | 코드 분리 및 검증 완료 보고서 |
 | `04_description.md` | 전체 진행 설명서 |
@@ -75,10 +80,10 @@
 
 이미지 5장은 다음처럼 두 과제로 나뉜다.
 
-| 과제 | 이미지 | 구현 파일 |
-| --- | --- | --- |
-| 과제 A | `img/s1.jpg`, `img/s2.jpg` | `src/01_task_risk_analyzer.py` |
-| 과제 B | `img/s3.jpg`, `img/s4.jpg`, `img/s5.jpg` | `src/02_operational_kpi_analyzer.py` |
+| 과제 | 이미지 | 문자열 파일 | 구현 파일 |
+| --- | --- | --- | --- |
+| 과제 A | `img/s1.jpg`, `img/s2.jpg` | `text/01_assignment_A.md` | `src/01_task_risk_analyzer.py` |
+| 과제 B | `img/s3.jpg`, `img/s4.jpg`, `img/s5.jpg` | `text/02_assignment_B.md` | `src/02_operational_kpi_analyzer.py` |
 
 ### 과제 A
 
@@ -127,6 +132,7 @@
 ```text
 이미지 확인
 -> 01_report.md 작성
+-> text/01_assignment_A.md, text/02_assignment_B.md 작성
 -> 02_progress.md 작성
 -> Python 파일 분리
 -> 03_compelete.md 완료 보고
@@ -217,6 +223,7 @@ cd /home/username/python/sample
 ```bash
 ls img
 ls README.md 01_report.md 02_progress.md 03_compelete.md 04_description.md 05_colab.md
+ls text/01_assignment_A.md text/02_assignment_B.md
 ```
 
 Python 파일을 확인한다.
@@ -274,6 +281,8 @@ src/02_operational_kpi_analyzer.py
 | --- | --- |
 | 과제 A 이미지가 있다. | `ls img/s1.jpg img/s2.jpg` |
 | 과제 B 이미지가 있다. | `ls img/s3.jpg img/s4.jpg img/s5.jpg` |
+| 과제 A 문자열 파일이 있다. | `ls text/01_assignment_A.md` |
+| 과제 B 문자열 파일이 있다. | `ls text/02_assignment_B.md` |
 | 진행 문서가 있다. | `ls 02_progress.md` |
 | 과제 A 코드가 있다. | `ls src/01_task_risk_analyzer.py` |
 | 과제 B 코드가 있다. | `ls src/02_operational_kpi_analyzer.py` |

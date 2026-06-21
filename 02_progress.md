@@ -9,6 +9,13 @@
 | 과제 A | `img/s1.jpg`, `img/s2.jpg` | `src/01_task_risk_analyzer.py` |
 | 과제 B | `img/s3.jpg`, `img/s4.jpg`, `img/s5.jpg` | `src/02_operational_kpi_analyzer.py` |
 
+이미지에서 판독한 문자열 정리 파일은 다음과 같다.
+
+| 과제 | 문자열 파일 |
+| --- | --- |
+| 과제 A | `text/01_assignment_A.md` |
+| 과제 B | `text/02_assignment_B.md` |
+
 ## 과제 A: 작업 리스크 및 우선순위 분석 프로그램
 
 과제 A는 `tasks`라는 작업 목록을 가지고 업무 리스크를 분석하고, 처리 우선순위를 정리하는 프로그램을 만들라는 내용이다.

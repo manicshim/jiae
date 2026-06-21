@@ -13,6 +13,13 @@
 | 과제 A | `img/s1.jpg`, `img/s2.jpg` | `src/01_task_risk_analyzer.py` |
 | 과제 B | `img/s3.jpg`, `img/s4.jpg`, `img/s5.jpg` | `src/02_operational_kpi_analyzer.py` |
 
+이미지 내용은 과제별 문자열 문서로도 정리했다.
+
+| 과제 | 문자열 정리 파일 |
+| --- | --- |
+| 과제 A | `text/01_assignment_A.md` |
+| 과제 B | `text/02_assignment_B.md` |
+
 ## 완료 결과
 
 생성된 Python 파일은 다음과 같다.
@@ -119,6 +126,8 @@ python3 src/02_operational_kpi_analyzer.py
 | --- | --- |
 | `README.md` | 과제 A/B 분류, 실행 파일, 실행 명령 정리 |
 | `01_report.md` | 이미지별 과제 A/B 분류 추가 |
+| `text/01_assignment_A.md` | 과제 A 이미지 내용을 문자열 형태로 정리 |
+| `text/02_assignment_B.md` | 과제 B 이미지 내용을 문자열 형태로 정리 |
 | `02_progress.md` | 기존 `02_task.md` 역할을 새 파일명으로 정리 |
 | `03_compelete.md` | 코드 분리 완료 보고로 재작성 |
 | `04_description.md` | 실행 파일명과 검증 명령 갱신 |

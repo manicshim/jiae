@@ -15,6 +15,13 @@
 | 과제 A | `img/s1.jpg`, `img/s2.jpg` | `src/01_task_risk_analyzer.py` |
 | 과제 B | `img/s3.jpg`, `img/s4.jpg`, `img/s5.jpg` | `src/02_operational_kpi_analyzer.py` |
 
+이미지 내용을 문자열로 정리한 파일은 다음과 같다.
+
+| 과제 | 문자열 정리 파일 |
+| --- | --- |
+| 과제 A | `text/01_assignment_A.md` |
+| 과제 B | `text/02_assignment_B.md` |
+
 ## 파일별 상세 내용
 
 ### `img/s1.jpg`

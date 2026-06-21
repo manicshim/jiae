@@ -17,6 +17,8 @@
 | --- | --- |
 | `img/s1.jpg` ~ `img/s5.jpg` | 원본 과제 이미지 |
 | `01_report.md` | 이미지별 상세 분석 보고서 |
+| `text/01_assignment_A.md` | 과제 A 이미지 내용을 문자열로 정리한 문서 |
+| `text/02_assignment_B.md` | 과제 B 이미지 내용을 문자열로 정리한 문서 |
 | `02_progress.md` | 이미지 분석을 바탕으로 정리한 해야 할 일 |
 | `src/01_task_risk_analyzer.py` | 과제 A 실행 코드 |
 | `src/02_operational_kpi_analyzer.py` | 과제 B 실행 코드 |
@@ -29,6 +31,8 @@
 
 ```text
 01_report.md
+-> text/01_assignment_A.md
+-> text/02_assignment_B.md
 -> 02_progress.md
 -> src/01_task_risk_analyzer.py
 -> src/02_operational_kpi_analyzer.py

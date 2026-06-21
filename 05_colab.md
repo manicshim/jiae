@@ -8,10 +8,12 @@
 
 현재 Python 파일은 다음 두 개로 분리되어 있다.
 
-| 과제 | Python 파일 |
-| --- | --- |
-| 과제 A | `src/01_task_risk_analyzer.py` |
-| 과제 B | `src/02_operational_kpi_analyzer.py` |
+| 과제 | 문자열 정리 파일 | Python 파일 |
+| --- | --- | --- |
+| 과제 A | `text/01_assignment_A.md` | `src/01_task_risk_analyzer.py` |
+| 과제 B | `text/02_assignment_B.md` | `src/02_operational_kpi_analyzer.py` |
+
+`text/01_assignment_A.md`와 `text/02_assignment_B.md`는 이미지 내용을 문장과 단락 기준으로 옮긴 참고 문서다.
 
 ---
 
