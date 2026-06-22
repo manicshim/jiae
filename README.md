@@ -80,3 +80,7 @@ python3 -m py_compile src/01_task_risk_analyzer.py src/02_operational_kpi_analyz
 로컬 환경에서 `python3` 명령어를 사용할 수 없다면 `05_colab.md`를 참고해 Google Colab에서 코드를 실행하면 된다.
 
 `img/s2.jpg`의 예시 출력에는 `작업C`가 위험 작업으로 표시되지만, 공식 판정식 기준으로는 위험 작업이 아니다. 따라서 과제 A 코드는 공식 기준을 우선해 `작업D`만 위험 작업으로 처리한다.
+
+현재 구현은 중복 계산을 줄이고, 빈 데이터에 대한 비율 계산을 방어하며, Markdown 형식 리포트를 일관되게 출력한다.
+
+함수별 주석도 입력, 계산, 출력 흐름이 한눈에 보이도록 보강되어 있다.

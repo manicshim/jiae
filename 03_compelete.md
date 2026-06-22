@@ -55,6 +55,7 @@ src/01_task_risk_analyzer.py
 - `urgent > high > medium > low` 기준 작업 정렬
 - 동일 우선순위 내 빠른 마감일 우선 정렬
 - Markdown 형식 리포트 출력
+- 중복 날짜 파싱을 줄인 분석 로직 적용
 
 대표 출력 시작 문구:
 
@@ -84,6 +85,7 @@ src/02_operational_kpi_analyzer.py
 - 긴급 대응 필요 이슈 TOP 5 출력
 - AI 기반 개선 권고사항 출력
 - Markdown 형식 리포트 출력
+- 공통 일정 분석 결과 재사용 및 빈 데이터 방어
 
 대표 출력 시작 문구:
 
@@ -143,3 +145,7 @@ python3 src/02_operational_kpi_analyzer.py
 src/01_task_risk_analyzer.py
 src/02_operational_kpi_analyzer.py
 ```
+
+두 파일 모두 공식 판정식과 데이터 기준을 우선하며, 중복 계산을 줄인 형태로 정리되어 있다.
+
+함수 상단 주석도 입력, 계산, 출력 역할이 드러나도록 상세하게 정리했다.

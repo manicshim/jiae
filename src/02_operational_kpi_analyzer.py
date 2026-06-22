@@ -1,35 +1,66 @@
 from datetime import datetime
 
 
-# 문자열 날짜를 datetime 객체로 바꿔 마감일 계산에 사용한다.
+# 문자열 날짜를 분석용 datetime 객체로 변환한다.
+# KPI 계산과 일정 이슈 판정에서 공통으로 쓰는 기준 변환기다.
 def parse_date(date_text):
     return datetime.strptime(date_text, "%Y-%m-%d")
 
 
-# 여러 데이터셋을 기반으로 오류율, 적정성, 마감 가능성 등 KPI를 계산한다.
-def calculate_dashboard_kpis(data):
-    total_count = sum(item["total"] for item in data["dataset1"])
-    error_count = sum(item["errors"] for item in data["dataset1"])
-    error_rate = error_count / total_count * 100
+# 0으로 나누는 상황을 방어하는 비율 계산 도우미다.
+# 데이터셋이 비어 있거나 합계가 0일 때도 안전하게 0.0%를 반환한다.
+def safe_percentage(numerator, denominator):
+    if not denominator:
+        return 0.0
+    return numerator / denominator * 100
 
-    suitable_items = [
-        item
-        for item in data["dataset2"]
-        if item["min_required"] <= item["current"] <= item["max_allowed"]
-    ]
-    item_suitability = len(suitable_items) / len(data["dataset2"]) * 100
 
-    base_date = parse_date(data["date"])
-    possible_tasks = []
-    for task in data["dataset3"]:
-        remaining_days = (parse_date(task["due_date"]) - base_date).days
+# 작업 일정 데이터를 한 번만 계산해 KPI와 이슈 탐지에서 재사용한다.
+# 마감일, 남은 일수, 예상 소요 일수, 위험 여부를 미리 계산해 둔다.
+def analyze_task_schedule(tasks, base_date):
+    analyzed_tasks = []
+
+    for task in tasks:
+        due_date = parse_date(task["due_date"])
+        remaining_days = (due_date - base_date).days
         required_days = task["workload_hours"] / 8
-        if remaining_days >= required_days:
-            possible_tasks.append(task)
-    deadline_possibility = len(possible_tasks) / len(data["dataset3"]) * 100
+        analyzed_tasks.append(
+            {
+                **task,
+                "remaining_days": remaining_days,
+                "required_days": required_days,
+                "is_risky": remaining_days < required_days,
+            }
+        )
 
-    normal_status_count = sum(1 for item in data["dataset4"] if item["status"] == "normal")
-    normal_status_rate = normal_status_count / len(data["dataset4"]) * 100
+    return analyzed_tasks
+
+
+# 여러 데이터셋을 기반으로 핵심 운영 KPI를 계산한다.
+# 각 비율은 안전한 분모 처리와 공통 일정 분석 결과를 사용한다.
+def calculate_dashboard_kpis(data, task_analysis=None, base_date=None):
+    dataset1 = data.get("dataset1", [])
+    dataset2 = data.get("dataset2", [])
+    dataset4 = data.get("dataset4", [])
+    base_date = base_date or parse_date(data["date"])
+    analyzed_tasks = task_analysis or analyze_task_schedule(data.get("dataset3", []), base_date)
+
+    total_count = sum(item["total"] for item in dataset1)
+    error_count = sum(item["errors"] for item in dataset1)
+    error_rate = safe_percentage(error_count, total_count)
+
+    suitable_count = sum(
+        1
+        for item in dataset2
+        if item["min_required"] <= item["current"] <= item["max_allowed"]
+    )
+    item_suitability = safe_percentage(suitable_count, len(dataset2))
+
+    possible_task_count = sum(1 for task in analyzed_tasks if not task["is_risky"])
+    deadline_possibility = safe_percentage(possible_task_count, len(analyzed_tasks))
+
+    normal_status_count = sum(1 for item in dataset4 if item["status"] == "normal")
+    normal_status_rate = safe_percentage(normal_status_count, len(dataset4))
 
     error_score = max(0, 100 - max(0, error_rate - 5) * 10)
     total_score = (
@@ -46,6 +77,7 @@ def calculate_dashboard_kpis(data):
 
 
 # 현재값과 목표값을 비교해 KPI 상태를 정상, 주의, 위험으로 분류한다.
+# under 모드는 낮을수록 좋고, 기본 모드는 높을수록 좋은 지표에 적용한다.
 def grade_status(current, target, mode):
     if mode == "under":
         if current <= target:
@@ -61,9 +93,14 @@ def grade_status(current, target, mode):
     return "위험"
 
 
-# KPI와 원본 데이터를 검사해 대응이 필요한 이슈를 점수순 TOP 5로 뽑는다.
-def find_dashboard_issues(data, kpis):
+# KPI와 원본 데이터를 함께 검사해 대응 우선순위가 높은 이슈를 고른다.
+# 작업 일정, 재고, 비정상 상태, 종합 점수 미달을 모두 이슈 후보로 묶는다.
+def find_dashboard_issues(data, kpis, task_analysis=None, base_date=None):
     issues = []
+    dataset2 = data.get("dataset2", [])
+    dataset4 = data.get("dataset4", [])
+    base_date = base_date or parse_date(data["date"])
+    analyzed_tasks = task_analysis or analyze_task_schedule(data.get("dataset3", []), base_date)
 
     if kpis["error_rate"] > 5:
         issues.append(
@@ -76,9 +113,13 @@ def find_dashboard_issues(data, kpis):
             }
         )
 
-    for item in data["dataset2"]:
+    for item in dataset2:
         if item["current"] < item["min_required"]:
-            days_left = item["current"] / item["daily_usage"]
+            days_left = (
+                item["current"] / item["daily_usage"]
+                if item["daily_usage"]
+                else float("inf")
+            )
             issues.append(
                 {
                     "score": 88,
@@ -89,25 +130,22 @@ def find_dashboard_issues(data, kpis):
                 }
             )
 
-    base_date = parse_date(data["date"])
-    for task in data["dataset3"]:
-        remaining_days = (parse_date(task["due_date"]) - base_date).days
-        required_days = task["workload_hours"] / 8
-        if remaining_days < required_days or task["priority"] == "urgent":
+    for task in analyzed_tasks:
+        if task["is_risky"] or task["priority"] == "urgent":
             issues.append(
                 {
                     "score": 95 if task["priority"] == "urgent" else 85,
                     "level": "크리티컬",
                     "title": "작업 일정 지연 위험",
                     "detail": (
-                        f"{task['task_id']}: 마감 {remaining_days}일 전, "
-                        f"소요 {required_days:.1f}일"
+                        f"{task['task_id']}: 마감 {task['remaining_days']}일 전, "
+                        f"소요 {task['required_days']:.1f}일"
                     ),
                     "action": "우선 처리 필요",
                 }
             )
 
-    warning_count = sum(1 for item in data["dataset4"] if item["status"] != "normal")
+    warning_count = sum(1 for item in dataset4 if item["status"] != "normal")
     if warning_count:
         issues.append(
             {
@@ -133,7 +171,8 @@ def find_dashboard_issues(data, kpis):
     return sorted(issues, key=lambda issue: issue["score"], reverse=True)[:5]
 
 
-# 목표에 미달한 KPI를 기준으로 개선 액션, 예상 효과, 우선순위를 만든다.
+# 목표에 미달한 KPI만 골라 실행 가능한 개선 권고사항을 만든다.
+# 출력은 작업 문장, 기대 효과, 우선순위로 고정해 문서와 형식을 맞춘다.
 def create_recommendations(kpis):
     recommendations = []
 
@@ -180,7 +219,8 @@ def create_recommendations(kpis):
     return recommendations
 
 
-# 과제 B의 입력 데이터를 준비하고 KPI/이슈/권고사항 리포트를 출력한다.
+# 과제 B의 샘플 입력을 준비하고 Markdown 리포트를 출력한다.
+# KPI 표, 이슈 목록, 권고사항 목록을 순서대로 출력해 문서와 동일하게 맞춘다.
 def print_dashboard_report():
     dashboard_data = {
         "dataset1": [
@@ -244,8 +284,14 @@ def print_dashboard_report():
         "date": "2026-01-26",
     }
 
-    kpis = calculate_dashboard_kpis(dashboard_data)
-    issues = find_dashboard_issues(dashboard_data, kpis)
+    base_date = parse_date(dashboard_data["date"])
+    task_analysis = analyze_task_schedule(dashboard_data["dataset3"], base_date)
+    kpis = calculate_dashboard_kpis(
+        dashboard_data, task_analysis=task_analysis, base_date=base_date
+    )
+    issues = find_dashboard_issues(
+        dashboard_data, kpis, task_analysis=task_analysis, base_date=base_date
+    )
     recommendations = create_recommendations(kpis)
 
     print("# 과제 B: 통합 운영 대시보드 시스템")
@@ -295,7 +341,7 @@ def print_dashboard_report():
         print(f"   - 우선순위: {recommendation['priority']}")
 
 
-# 이 파일을 직접 실행했을 때 과제 B 리포트를 출력하는 시작점이다.
+# 모듈 직접 실행 시 과제 B 리포트 생성을 시작한다.
 def main():
     print_dashboard_report()
 

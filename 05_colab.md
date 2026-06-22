@@ -15,6 +15,8 @@
 
 `text/01_assignment_A.md`와 `text/02_assignment_B.md`는 이미지 내용을 문장과 단락 기준으로 옮긴 참고 문서다.
 
+현재 Python 구현은 공통 계산을 재사용하고, Markdown 형식 리포트를 출력하도록 정리되어 있다.
+
 ---
 
 ## 2. Google Colab 접속
